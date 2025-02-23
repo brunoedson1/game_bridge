@@ -56,16 +56,7 @@
 
             <!-- Container de posts -->
             <div id="posts-container">
-                <div class="post">
-                    <div class="user-info">
-                        <img src="../images/avatar.png" alt="Avatar" class="avatar">
-                        <div>
-                            <h3>GamerXYZ</h3>
-                            <span class="date">Publicado em 25/09/2024</span>
-                        </div>
-                    </div>
-                    <p class="content">Acabei de terminar um jogo incrível! Alguém mais jogou o *GameY*?</p>
-                </div>
+                <!-- Posts serão carregados aqui -->
             </div>
         </section>
     </main>
@@ -79,11 +70,94 @@
         </form>
     </div>
 
-</body>
-</html>
+    <script>
+        document.getElementById("profile-icon").addEventListener("click", function() {
+            var dropdown = document.getElementById("profile-dropdown");
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                dropdown.style.display = "block";
+            }
+        });
 
+        window.onclick = function(event) {
+            if (!event.target.matches('.avatar')) {
+                var dropdowns = document.getElementsByClassName("dropdown");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === "block") {
+                        openDropdown.style.display = "none";
+                    }
+                }
+            }
+        };
 
-<style>
+        // Função para adicionar novo post
+        document.getElementById('add-post-button').addEventListener('click', function() {
+            document.getElementById('post-form-container').classList.add('active');
+        });
+
+        // Manipulação do envio do formulário
+        document.getElementById('post-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita o comportamento padrão de envio do formulário
+
+            // Obtém o conteúdo do post
+            var postContent = document.getElementById('post-content').value;
+
+            // Cria um novo post
+            var newPost = {
+                content: postContent,
+                date: new Date().toLocaleDateString(),
+                user: "UsuárioAtual"
+            };
+
+            // Adiciona o novo post ao LocalStorage
+            addPostToLocalStorage(newPost);
+
+            // Limpa o campo de texto e fecha o formulário
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-form-container').classList.remove('active');
+
+            // Recarrega os posts na página
+            loadPosts();
+        });
+
+        // Função para adicionar post ao LocalStorage
+        function addPostToLocalStorage(post) {
+            var posts = JSON.parse(localStorage.getItem('posts')) || [];
+            posts.push(post);
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+
+        // Função para carregar posts do LocalStorage
+        function loadPosts() {
+            var posts = JSON.parse(localStorage.getItem('posts')) || [];
+            var postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = ''; // Limpa os posts atuais
+
+            posts.forEach(function(post) {
+                var newPost = document.createElement('div');
+                newPost.classList.add('post');
+
+                newPost.innerHTML = `
+                    <div class="user-info">
+                        <img src="../images/avatar.png" alt="Avatar" class="avatar">
+                        <div>
+                            <h3>${post.user}</h3>
+                            <span class="date">Publicado em ${post.date}</span>
+                        </div>
+                    </div>
+                    <p class="content">${post.content}</p>
+                `;
+
+                postsContainer.appendChild(newPost);
+            });
+        }
+
+        // Carrega os posts quando a página é carregada
+        window.onload = loadPosts;
+    </script>
+    <style>
  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
 
     * {
@@ -360,63 +434,5 @@ main {
 
 
 </style>
-
-<script>
-    document.getElementById("profile-icon").addEventListener("click", function() {
-        var dropdown = document.getElementById("profile-dropdown");
-        if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
-        } else {
-            dropdown.style.display = "block";
-        }
-    });
-
-    window.onclick = function(event) {
-        if (!event.target.matches('.avatar')) {
-            var dropdowns = document.getElementsByClassName("dropdown");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.style.display === "block") {
-                    openDropdown.style.display = "none";
-                }
-            }
-        }
-    };
-
-    // Função para adicionar novo post
-    document.getElementById('add-post-button').addEventListener('click', function() {
-    document.getElementById('post-form-container').classList.add('active');
-});
-
-// Manipulação do envio do formulário
-document.getElementById('post-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita o comportamento padrão de envio do formulário
-
-    // Obtém o conteúdo do post
-    var postContent = document.getElementById('post-content').value;
-
-    // Cria um novo post
-    var newPost = document.createElement('div');
-    newPost.classList.add('post');
-
-    // Conteúdo dinâmico do novo post
-    newPost.innerHTML = `
-        <div class="user-info">
-            <img src="../images/avatar.png" alt="Avatar" class="avatar">
-            <div>
-                <h3>UsuárioAtual</h3>
-                <span class="date">Publicado em ${new Date().toLocaleDateString()}</span>
-            </div>
-        </div>
-        <p class="content">${postContent}</p>
-    `;
-
-    // Adiciona o novo post ao container de posts
-    document.getElementById('posts-container').appendChild(newPost);
-
-    // Limpa o campo de texto e fecha o formulário
-    document.getElementById('post-content').value = '';
-    document.getElementById('post-form-container').classList.remove('active');
-});
-
-</script>
+</body>
+</html>
